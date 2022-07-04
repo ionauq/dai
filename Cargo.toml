@@ -1,0 +1,22 @@
+[package]
+name = "dai"
+version = "0.1.0"
+edition = "2021"
+authors = ["shanquan <ionauq@gmail.com>"]
+description = "A tool for transmit notification to manufacturer push channel"
+keywords = ["push", "honor"]
+readme = "README.md"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+include = ["resources/config.toml"]
+
+[dependencies]
+reqwest = { version ="0.11", features = ["json"]}
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0.137", features = ["derive"] }
+serde_json = "1.0.81"
+toml = "0.5.9"
+clap = {version = "3.2.6", features = ["derive"]}
+dirs = "4.0.0"
+
+

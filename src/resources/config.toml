@@ -1,0 +1,12 @@
+# 当前激活的应用
+active = "app0"
+
+## 应用1
+[configs.app0]
+honor = { app_id = 0, client_id = "", client_secret = "" }
+huawei = { app_id = 0, client_id = "", client_secret = "" }
+
+## 应用2
+[configs.app1]
+honor = { app_id = 0, client_id = "", client_secret = "" }
+huawei = { app_id = 0, client_id = "", client_secret = "" }
