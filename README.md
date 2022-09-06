@@ -1,9 +1,14 @@
 # dai（岱）
-A cli tool for transmit notification to manufacturer push notification service.
 
-now support:
+`dai` 是一款方便进行推送测试的 cli 工具。
+
+* 支持多APP配置
+* 支持多通道推送
+
+目前已支持:
+
  * [x] honor
- * [ ] huawei
+ * [x] huawei
  * [ ] xiaomi
  * [ ] APNs
  * [ ] oppo
@@ -11,7 +16,8 @@ now support:
  * [ ] meizu
  * [ ] FCM
 
-> 首次使用Rust解决需求，主要为了练习。
+
+> Rust练习项目.....
 
 ## 使用方式
 
@@ -46,7 +52,8 @@ huawei = { app_id = 0, client_id = "", client_secret = "" }
 
 ### channel 命令
 
-为了最大定制化请求参数，参数存储采用`json`文件方式。使用 `channel` 命令生成参数模版。目前路径为当前路径。
+为了最大定制化请求参数，参数采用`json`文件。使用 `channel` 命令生成参数模版。
+模版生成路径为命令执行时的路径。
 
 ```shell
 dai channel -i honor      # 生成honor通道请求参数

@@ -1,4 +1,7 @@
 use crate::honor;
+use crate::huawei;
+use ansi_term::Colour::Green;
+use log::info;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -16,7 +19,7 @@ pub struct PushConfig {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ChannelConfig {
     pub xiaomi: Option<String>,
-    pub huawei: Option<String>,
+    pub huawei: Option<huawei::HuaweiConfig>,
     pub honor: Option<honor::HonorConfig>,
     pub vivo: Option<String>,
     pub oppo: Option<String>,
@@ -24,7 +27,7 @@ pub struct ChannelConfig {
 }
 
 impl PushConfig {
-    /// 生成默认应用通道配置文件
+    /// 生成默认配置文件
     pub fn init() {
         let config = include_str!("resources/config.toml");
         let config_path = dirs::home_dir().unwrap().join(CONFIG_PATH);
@@ -38,7 +41,10 @@ impl PushConfig {
         }
 
         fs::write(&current_path, config).unwrap();
-        println!("init config file: {}", &current_path.to_str().unwrap());
+        info!(
+            "init default config file: {}",
+            Green.paint(current_path.to_str().unwrap())
+        );
     }
 
     /// 获取指定应用的通道信息

@@ -1,13 +1,15 @@
 mod common;
 mod config;
 mod honor;
+mod huawei;
 
-use crate::honor::AndroidConfigBuilder;
+use crate::huawei::HuaweiConfig;
+use ansi_term::Color::Green;
 use clap::{Args, Parser, Subcommand};
-use honor::{
-    AndroidNotificationBuilder, BadgeNotificationBuilder, ClickActionBuilder, HonorConfig,
-    MessageBuilder, NotificationBuilder,
-};
+use env_logger::WriteStyle;
+use honor::{HonorConfig, MessageBuilder as HonorMessageBuilder};
+use huawei::RequestMessageBuilder as HuaweiRequestMessageBuilder;
+use log::{info, warn, LevelFilter};
 use std::{env, fs};
 
 #[derive(Parser)]
@@ -51,10 +53,11 @@ struct PushOptions {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    init_logger();
     let cli = Cli::parse();
     match &cli.command {
-        Commands::App { init } => {
-            println!("init config file");
+        Commands::App { init: _init } => {
+            info!("init dai config file");
             config::PushConfig::init();
         }
         Commands::Channel { init } => {
@@ -64,15 +67,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let channel = push_options.channel.to_lowercase();
             let push_config = config::PushConfig::get_app_config();
             if push_config.is_none() {
-                println!("config file not found");
+                warn!("config file not found");
                 return Ok(());
             }
             match channel.as_str() {
                 "honor" => {
                     let config = push_config.unwrap().honor.unwrap();
-                    honor_push(&push_options, &config).await?;
+                    honor_push(push_options, &config).await?;
                 }
-                "huawei" => {}
+                "huawei" => {
+                    let config = push_config.unwrap().huawei.unwrap();
+                    huawei_push(push_options, &config).await?;
+                }
                 _ => {}
             }
         }
@@ -84,9 +90,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn create_message_file(channel: &str) {
     let content = match channel {
         "honor" => {
-            let message = MessageBuilder::new().build();
-            let content = serde_json::to_string_pretty(&message).unwrap();
-            content
+            let message = HonorMessageBuilder::new().build();
+            serde_json::to_string_pretty(&message).unwrap()
+        }
+        "huawei" => {
+            let message = HuaweiRequestMessageBuilder::new().build();
+            serde_json::to_string_pretty(&message).unwrap()
         }
         _ => "".to_string(),
     };
@@ -95,7 +104,11 @@ fn create_message_file(channel: &str) {
         .unwrap()
         .join(channel.to_owned() + ".json");
     fs::write(&path, &content).unwrap();
-    println!("create message file: {}", &path.to_str().unwrap());
+    info!(
+        "create {} channel message template file: {}",
+        channel,
+        Green.paint(path.to_str().unwrap())
+    );
 }
 
 /// push message
@@ -111,9 +124,41 @@ async fn honor_push(
             .unwrap()
             .to_string()
     });
-    println!("used file path: {}", file_path);
+    info!("used file path: {}", file_path);
     let content = fs::read_to_string(file_path)?;
     let message = serde_json::from_str(&content)?;
-    honor::send_message(&config, &message).await?;
+    honor::send_message(config, &message).await?;
     Ok(())
+}
+
+/// push message
+async fn huawei_push(
+    options: &PushOptions,
+    config: &HuaweiConfig,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let file_path = options.file.clone().unwrap_or_else(|| {
+        env::current_dir()
+            .unwrap()
+            .join("huawei.json")
+            .to_str()
+            .unwrap()
+            .to_string()
+    });
+    info!("used file path: {}", file_path);
+    let content = fs::read_to_string(file_path)?;
+    let message = serde_json::from_str(&content)?;
+    huawei::send_message(config, &message).await?;
+    Ok(())
+}
+
+/// 初始化日志文件
+fn init_logger() {
+    env_logger::builder()
+        .filter(None, LevelFilter::Debug)
+        .write_style(WriteStyle::Always)
+        .format_timestamp(None)
+        .format_level(false)
+        .format_module_path(false)
+        .format_target(false)
+        .init();
 }

@@ -1,6 +1,6 @@
 [package]
 name = "dai"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["shanquan <ionauq@gmail.com>"]
 description = "A tool for transmit notification to manufacturer push channel"
@@ -16,7 +16,10 @@ tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
 toml = "0.5.9"
-clap = {version = "3.2.6", features = ["derive"]}
+clap = {version = "3.2.20", features = ["derive"]}
 dirs = "4.0.0"
+log = "0.4.17"
+env_logger = "0.9.0"
+ansi_term = "0.12.1"
 
 
