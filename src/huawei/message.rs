@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RequestMessage {
+    /// 控制当前是否为测试消息，测试消息只做格式合法性校验，不会推送给用户设备
     pub validate_only: bool,
+    /// 推送消息结构体
     pub message: Message,
 }
 

@@ -5,8 +5,10 @@ active = "app0"
 [configs.app0]
 honor = { app_id = 0, client_id = "", client_secret = "" }
 huawei = { app_id = 0, client_id = "", client_secret = "" }
+xiaomi = { app_secret = "" }
 
 ## 应用2
 [configs.app1]
 honor = { app_id = 0, client_id = "", client_secret = "" }
 huawei = { app_id = 0, client_id = "", client_secret = "" }
+xiaomi = { app_secret = "" }

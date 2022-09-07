@@ -1,9 +1,12 @@
+use crate::ChannelType::{Apns, Fcm, Honor, Huawei, Meizu, Oppo, Vivo, Xiaomi};
 use std::fmt;
+use std::str::FromStr;
 
 pub mod request;
 pub mod request_token;
 
 /// 通道枚举类
+#[derive(Debug, PartialEq, Eq)]
 pub enum ChannelType {
     Apns,
     Huawei,
@@ -18,14 +21,31 @@ pub enum ChannelType {
 impl fmt::Display for ChannelType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ChannelType::Apns => write!(f, "apns"),
-            ChannelType::Huawei => write!(f, "huawei"),
-            ChannelType::Xiaomi => write!(f, "xiaomi"),
-            ChannelType::Oppo => write!(f, "oppo"),
-            ChannelType::Vivo => write!(f, "vivo"),
-            ChannelType::Honor => write!(f, "honor"),
-            ChannelType::Meizu => write!(f, "meizu"),
-            ChannelType::Fcm => write!(f, "fcm"),
+            Apns => write!(f, "apns"),
+            Huawei => write!(f, "huawei"),
+            Xiaomi => write!(f, "xiaomi"),
+            Oppo => write!(f, "oppo"),
+            Vivo => write!(f, "vivo"),
+            Honor => write!(f, "honor"),
+            Meizu => write!(f, "meizu"),
+            Fcm => write!(f, "fcm"),
+        }
+    }
+}
+// 实现FromStr 支持字符串转枚举
+impl FromStr for ChannelType {
+    type Err = ();
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        match input {
+            "apns" => Ok(Apns),
+            "huawei" => Ok(Huawei),
+            "honor" => Ok(Honor),
+            "xiaomi" => Ok(Xiaomi),
+            "oppo" => Ok(Oppo),
+            "vivo" => Ok(Vivo),
+            "meizu" => Ok(Meizu),
+            "fcm" => Ok(Fcm),
+            _ => Err(()),
         }
     }
 }

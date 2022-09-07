@@ -3,8 +3,8 @@ name = "dai"
 version = "0.1.1"
 edition = "2021"
 authors = ["shanquan <ionauq@gmail.com>"]
-description = "A tool for transmit notification to manufacturer push channel"
-keywords = ["push", "honor"]
+description = "消息推送测试cli工具"
+keywords = ["push", "honor", "huawei", "xiaomi"]
 readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

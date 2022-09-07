@@ -2,15 +2,20 @@ mod common;
 mod config;
 mod honor;
 mod huawei;
+mod xiaomi;
 
-use crate::huawei::HuaweiConfig;
+use crate::common::ChannelType;
+use crate::config::PushConfig;
+
 use ansi_term::Color::Green;
 use clap::{Args, Parser, Subcommand};
 use env_logger::WriteStyle;
-use honor::{HonorConfig, MessageBuilder as HonorMessageBuilder};
+use honor::MessageBuilder as HonorMessageBuilder;
 use huawei::RequestMessageBuilder as HuaweiRequestMessageBuilder;
-use log::{info, warn, LevelFilter};
+use log::{error, info, warn, LevelFilter};
+use std::str::FromStr;
 use std::{env, fs};
+use xiaomi::MessageBuilder as XiaomiMessageBuilder;
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -58,43 +63,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::App { init: _init } => {
             info!("init dai config file");
-            config::PushConfig::init();
+            PushConfig::init();
         }
         Commands::Channel { init } => {
-            create_message_file(init.as_str());
+            let channel_type = ChannelType::from_str(&init.to_lowercase()).unwrap();
+            create_message_file(&channel_type);
         }
         Commands::Push(push_options) => {
-            let channel = push_options.channel.to_lowercase();
-            let push_config = config::PushConfig::get_app_config();
-            if push_config.is_none() {
-                warn!("config file not found");
+            let channel_type = ChannelType::from_str(&push_options.channel.to_lowercase()).unwrap();
+            let push_config = PushConfig::get();
+            if push_config.is_err() {
+                error!("config file not found");
                 return Ok(());
             }
-            match channel.as_str() {
-                "honor" => {
-                    let config = push_config.unwrap().honor.unwrap();
-                    honor_push(push_options, &config).await?;
-                }
-                "huawei" => {
-                    let config = push_config.unwrap().huawei.unwrap();
-                    huawei_push(push_options, &config).await?;
-                }
-                _ => {}
-            }
+
+            push_message(push_options, &channel_type, &push_config.unwrap()).await?;
         }
     }
     Ok(())
 }
 
 /// 生成下发文件
-fn create_message_file(channel: &str) {
-    let content = match channel {
-        "honor" => {
+fn create_message_file(channel_type: &ChannelType) {
+    let content = match channel_type {
+        ChannelType::Huawei => {
+            let message = HuaweiRequestMessageBuilder::new().build();
+            serde_json::to_string_pretty(&message).unwrap()
+        }
+        ChannelType::Honor => {
             let message = HonorMessageBuilder::new().build();
             serde_json::to_string_pretty(&message).unwrap()
         }
-        "huawei" => {
-            let message = HuaweiRequestMessageBuilder::new().build();
+        ChannelType::Xiaomi => {
+            let message = XiaomiMessageBuilder::new().build();
             serde_json::to_string_pretty(&message).unwrap()
         }
         _ => "".to_string(),
@@ -102,52 +103,56 @@ fn create_message_file(channel: &str) {
 
     let path = env::current_dir()
         .unwrap()
-        .join(channel.to_owned() + ".json");
+        .join(channel_type.to_string() + ".json");
     fs::write(&path, &content).unwrap();
     info!(
         "create {} channel message template file: {}",
-        channel,
+        channel_type.to_string(),
         Green.paint(path.to_str().unwrap())
     );
 }
 
-/// push message
-async fn honor_push(
+/// 消息推送
+async fn push_message(
     options: &PushOptions,
-    config: &HonorConfig,
+    channel_type: &ChannelType,
+    push_config: &PushConfig,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file_path = options.file.clone().unwrap_or_else(|| {
         env::current_dir()
             .unwrap()
-            .join("honor.json")
+            .join(channel_type.to_string() + ".json")
             .to_str()
             .unwrap()
             .to_string()
     });
-    info!("used file path: {}", file_path);
-    let content = fs::read_to_string(file_path)?;
-    let message = serde_json::from_str(&content)?;
-    honor::send_message(config, &message).await?;
-    Ok(())
-}
+    info!("use file: {}", file_path);
 
-/// push message
-async fn huawei_push(
-    options: &PushOptions,
-    config: &HuaweiConfig,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let file_path = options.file.clone().unwrap_or_else(|| {
-        env::current_dir()
-            .unwrap()
-            .join("huawei.json")
-            .to_str()
-            .unwrap()
-            .to_string()
-    });
-    info!("used file path: {}", file_path);
-    let content = fs::read_to_string(file_path)?;
-    let message = serde_json::from_str(&content)?;
-    huawei::send_message(config, &message).await?;
+    let content = fs::read_to_string(file_path).unwrap();
+
+    let channel_config = PushConfig::get_channel_configs(&push_config);
+    if channel_config.is_none() {
+        warn!("current app have no channel config info!");
+    }
+
+    match channel_type {
+        ChannelType::Huawei => {
+            let message = serde_json::from_str(&content);
+            let config = &channel_config.unwrap().huawei.unwrap();
+            huawei::send_message(config, &message.unwrap()).await?;
+        }
+        ChannelType::Honor => {
+            let message = serde_json::from_str(&content);
+            let config = &channel_config.unwrap().honor.unwrap();
+            honor::send_message(config, &message.unwrap()).await?;
+        }
+        ChannelType::Xiaomi => {
+            let message = serde_json::from_str(&content);
+            let config = &channel_config.unwrap().xiaomi.unwrap();
+            xiaomi::send_message(config, &message.unwrap()).await?;
+        }
+        _ => {}
+    }
     Ok(())
 }
 
