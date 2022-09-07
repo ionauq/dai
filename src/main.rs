@@ -1,11 +1,10 @@
 mod common;
-mod config;
 mod honor;
 mod huawei;
 mod xiaomi;
 
 use crate::common::ChannelType;
-use crate::config::PushConfig;
+use common::config::PushConfig;
 
 use ansi_term::Color::Green;
 use clap::{Args, Parser, Subcommand};
@@ -130,9 +129,9 @@ async fn push_message(
 
     let content = fs::read_to_string(file_path).unwrap();
 
-    let channel_config = PushConfig::get_channel_configs(&push_config);
+    let channel_config = PushConfig::get_channel_configs(push_config);
     if channel_config.is_none() {
-        warn!("current app have no channel config info!");
+        Err("current app have no channel config info!")?
     }
 
     match channel_type {

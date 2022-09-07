@@ -1,8 +1,7 @@
 mod huawei_config;
 mod message;
 
-use crate::common::request::{get_token_path, save_token_info};
-use crate::common::request_token::RequestToken;
+use crate::common::request::{get_token_path, save_token_info, RequestToken};
 use crate::common::ChannelType;
 use crate::huawei::message::RequestMessage;
 pub use huawei_config::HuaweiConfig;
@@ -26,14 +25,6 @@ pub async fn send_message(
     let res = client
         .post(&url)
         .bearer_auth(&token)
-        .header(
-            "timestamp",
-            SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH)
-                .unwrap()
-                .as_millis()
-                .to_string(),
-        )
         .json(&message)
         .send()
         .await?;

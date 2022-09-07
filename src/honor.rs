@@ -7,8 +7,7 @@ mod honor_config;
 mod message;
 mod notification;
 
-use crate::common::request::{get_token_path, save_token_info};
-use crate::common::request_token::RequestToken;
+use crate::common::request::{get_token_path, save_token_info, RequestToken};
 pub use crate::common::ChannelType;
 pub use android_config::{AndroidConfig, AndroidConfigBuilder};
 pub use android_notification::{AndroidNotification, AndroidNotificationBuilder};

@@ -1,5 +1,4 @@
-use crate::huawei;
-use crate::{honor, xiaomi};
+use crate::{honor, huawei, xiaomi};
 use ansi_term::Colour::Green;
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -31,7 +30,7 @@ pub struct ChannelConfig {
 impl PushConfig {
     /// 生成默认配置文件
     pub fn init() {
-        let config = include_str!("resources/config.toml");
+        let config = include_str!("../resources/config.toml");
         let config_path = dirs::home_dir().unwrap().join(CONFIG_PATH);
         if !config_path.exists() {
             fs::create_dir_all(&config_path).unwrap();

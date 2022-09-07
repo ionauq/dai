@@ -1,9 +1,17 @@
 use crate::common::ChannelType;
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::path::PathBuf;
 use std::{fs, io, time::SystemTime};
 
 pub const TOKEN_PATH: &str = ".dai/token/";
+
+/// 鉴权信息
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RequestToken {
+    pub access_token: String,
+    pub expires_in: u32,
+}
 
 pub fn get_token_path(app_id: String, channel: ChannelType) -> PathBuf {
     let token_home = dirs::home_dir().unwrap().join(TOKEN_PATH);

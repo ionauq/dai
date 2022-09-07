@@ -2,8 +2,8 @@ use crate::ChannelType::{Apns, Fcm, Honor, Huawei, Meizu, Oppo, Vivo, Xiaomi};
 use std::fmt;
 use std::str::FromStr;
 
+pub mod config;
 pub mod request;
-pub mod request_token;
 
 /// 通道枚举类
 #[derive(Debug, PartialEq, Eq)]
