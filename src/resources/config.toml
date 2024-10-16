@@ -6,6 +6,10 @@ active = "app0"
 honor = { app_id = 0, client_id = "", client_secret = "" }
 huawei = { app_id = 0, client_id = "", client_secret = "" }
 xiaomi = { app_secret = "" }
+oppo = { app_id = 0, app_key = "", master_secret = "" }
+vivo = { app_id = 0, app_key = "", app_secret = "" }
+meizu = { app_id = 0, app_secret = "" }
+fcm = { api_key = "", service_account = "", use = ""}
 
 ## 应用2
 [configs.app1]

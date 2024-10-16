@@ -25,14 +25,17 @@ impl BadgeNotificationBuilder {
             set_num: 0,
         }
     }
+    #[allow(dead_code)]
     pub fn add_num(mut self, add_num: i32) -> BadgeNotificationBuilder {
         self.add_num = add_num;
         self
     }
+    #[allow(dead_code)]
     pub fn badge_class(mut self, badge_class: String) -> BadgeNotificationBuilder {
         self.badge_class = badge_class;
         self
     }
+    #[allow(dead_code)]
     pub fn set_num(mut self, set_num: i32) -> BadgeNotificationBuilder {
         self.set_num = set_num;
         self

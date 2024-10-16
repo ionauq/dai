@@ -4,6 +4,8 @@ use std::str::FromStr;
 
 pub mod config;
 pub mod request;
+pub mod secret;
+pub mod transmit;
 
 /// 通道枚举类
 #[derive(Debug, PartialEq, Eq)]

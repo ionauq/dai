@@ -1,4 +1,4 @@
-use crate::{honor, huawei, xiaomi};
+use crate::{honor, huawei, oppo, xiaomi};
 use ansi_term::Colour::Green;
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -22,8 +22,8 @@ pub struct ChannelConfig {
     pub xiaomi: Option<xiaomi::XiaomiConfig>,
     pub huawei: Option<huawei::HuaweiConfig>,
     pub honor: Option<honor::HonorConfig>,
+    pub oppo: Option<oppo::OppoConfig>,
     pub vivo: Option<String>,
-    pub oppo: Option<String>,
     pub meizu: Option<String>,
 }
 

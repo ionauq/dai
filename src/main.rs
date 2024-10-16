@@ -1,6 +1,7 @@
 mod common;
 mod honor;
 mod huawei;
+mod oppo;
 mod xiaomi;
 
 use crate::common::ChannelType;
@@ -11,7 +12,9 @@ use clap::{Args, Parser, Subcommand};
 use env_logger::WriteStyle;
 use honor::MessageBuilder as HonorMessageBuilder;
 use huawei::RequestMessageBuilder as HuaweiRequestMessageBuilder;
-use log::{error, info, warn, LevelFilter};
+use log::{error, info, LevelFilter};
+use oppo::MessageBuilder as OppoMessageBuilder;
+use std::error::Error;
 use std::str::FromStr;
 use std::{env, fs};
 use xiaomi::MessageBuilder as XiaomiMessageBuilder;
@@ -36,7 +39,7 @@ enum Commands {
     /// 推送通道相关
     #[clap(arg_required_else_help = true)]
     Channel {
-        /// 指定通道创建请求参数文件: honor、huawei、oppo、vivo、xiaomi、meizu、apns、fcm
+        /// 指定通道创建请求参数文件: huawei、honor、xiaomi、oppo、vivo、meizu、apns、fcm
         #[clap(short, long, value_parser, name = "channel")]
         init: String,
     },
@@ -47,7 +50,7 @@ enum Commands {
 
 #[derive(Args, Debug)]
 struct PushOptions {
-    /// 指定通道名: honor、huawei、oppo、vivo、xiaomi、meizu、apns、fcm
+    /// 指定通道名: huawei、honor、xiaomi、oppo、vivo、meizu、apns、fcm
     #[clap(required = true, value_parser)]
     channel: String,
     /// 请求参数文件路径
@@ -56,7 +59,7 @@ struct PushOptions {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn Error>> {
     init_logger();
     let cli = Cli::parse();
     match &cli.command {
@@ -97,6 +100,10 @@ fn create_message_file(channel_type: &ChannelType) {
             let message = XiaomiMessageBuilder::new().build();
             serde_json::to_string_pretty(&message).unwrap()
         }
+        ChannelType::Oppo => {
+            let message = OppoMessageBuilder::new().build();
+            serde_json::to_string_pretty(&message).unwrap()
+        }
         _ => "".to_string(),
     };
 
@@ -116,7 +123,7 @@ async fn push_message(
     options: &PushOptions,
     channel_type: &ChannelType,
     push_config: &PushConfig,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn Error>> {
     let file_path = options.file.clone().unwrap_or_else(|| {
         env::current_dir()
             .unwrap()
@@ -149,6 +156,11 @@ async fn push_message(
             let message = serde_json::from_str(&content);
             let config = &channel_config.unwrap().xiaomi.unwrap();
             xiaomi::send_message(config, &message.unwrap()).await?;
+        }
+        ChannelType::Oppo => {
+            let message = serde_json::from_str(&content);
+            let config = &channel_config.unwrap().oppo.unwrap();
+            oppo::send_message(config, &message.unwrap()).await?;
         }
         _ => {}
     }

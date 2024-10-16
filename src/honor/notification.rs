@@ -22,14 +22,17 @@ impl NotificationBuilder {
             image: "".to_string(),
         }
     }
+    #[allow(dead_code)]
     pub fn title(mut self, title: String) -> NotificationBuilder {
         self.title = title;
         self
     }
+    #[allow(dead_code)]
     pub fn body(mut self, body: String) -> NotificationBuilder {
         self.body = body;
         self
     }
+    #[allow(dead_code)]
     pub fn image(mut self, image: String) -> NotificationBuilder {
         self.image = image;
         self

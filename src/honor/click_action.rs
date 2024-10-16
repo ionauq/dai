@@ -24,18 +24,23 @@ impl ClickActionBuilder {
             action: "".to_string(),
         }
     }
+
+    #[allow(dead_code)]
     pub fn r#type(mut self, r#type: i32) -> ClickActionBuilder {
         self.r#type = r#type;
         self
     }
+    #[allow(dead_code)]
     pub fn intent(mut self, intent: String) -> ClickActionBuilder {
         self.intent = intent;
         self
     }
+    #[allow(dead_code)]
     pub fn url(mut self, url: String) -> ClickActionBuilder {
         self.url = url;
         self
     }
+    #[allow(dead_code)]
     pub fn action(mut self, action: String) -> ClickActionBuilder {
         self.action = action;
         self

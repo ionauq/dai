@@ -28,18 +28,22 @@ impl MessageBuilder {
             token: Vec::new(),
         }
     }
+    #[allow(dead_code)]
     pub fn data(mut self, data: String) -> MessageBuilder {
         self.data = data;
         self
     }
+    #[allow(dead_code)]
     pub fn notification(mut self, notification: Notification) -> MessageBuilder {
         self.notification = notification;
         self
     }
+    #[allow(dead_code)]
     pub fn android(mut self, android: AndroidConfig) -> MessageBuilder {
         self.android = android;
         self
     }
+    #[allow(dead_code)]
     pub fn token(mut self, token: Vec<String>) -> MessageBuilder {
         self.token = token;
         self

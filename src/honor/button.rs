@@ -22,6 +22,7 @@ pub struct ButtonBuilder {
 
 impl ButtonBuilder {
     /// Creates a new `ButtonBuilder` with default properties.
+    #[allow(dead_code)]
     pub fn new() -> ButtonBuilder {
         ButtonBuilder {
             name: "".to_string(),
@@ -32,31 +33,37 @@ impl ButtonBuilder {
         }
     }
     /// Sets the name of the button.
+    #[allow(dead_code)]
     pub fn name(mut self, name: String) -> ButtonBuilder {
         self.name = name;
         self
     }
     /// Sets the action type of the button.
+    #[allow(dead_code)]
     pub fn action_type(mut self, action_type: i32) -> ButtonBuilder {
         self.action_type = action_type;
         self
     }
     /// Sets the intent type of the button.
+    #[allow(dead_code)]
     pub fn intent_type(mut self, intent_type: i32) -> ButtonBuilder {
         self.intent_type = intent_type;
         self
     }
     /// Sets the intent of the button.
+    #[allow(dead_code)]
     pub fn intent(mut self, intent: String) -> ButtonBuilder {
         self.intent = intent;
         self
     }
     /// Sets the data of the button.
+    #[allow(dead_code)]
     pub fn data(mut self, data: String) -> ButtonBuilder {
         self.data = data;
         self
     }
     /// Builds a `Button` with the properties set on this builder.
+    #[allow(dead_code)]
     pub fn build(self) -> Button {
         Button {
             name: self.name,

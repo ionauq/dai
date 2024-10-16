@@ -34,18 +34,25 @@ impl AndroidConfigBuilder {
             notification: AndroidNotificationBuilder::new().build(),
         }
     }
+
+    #[allow(dead_code)]
     pub fn ttl(mut self, ttl: String) -> AndroidConfigBuilder {
         self.ttl = ttl;
         self
     }
+
+    #[allow(dead_code)]
     pub fn bi_tag(mut self, bi_tag: String) -> AndroidConfigBuilder {
         self.bi_tag = bi_tag;
         self
     }
+
+    #[allow(dead_code)]
     pub fn data(mut self, data: String) -> AndroidConfigBuilder {
         self.data = data;
         self
     }
+    #[allow(dead_code)]
     pub fn notification(mut self, notification: AndroidNotification) -> AndroidConfigBuilder {
         self.notification = notification;
         self
